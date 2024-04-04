@@ -1,0 +1,30 @@
+{
+  "name": "@pushprotocol/frames-validator",
+  "version": "1.0.0",
+  "description": "Validator package to validate trustedData from Push Clients.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/push-protocol/frames-validator.git"
+  },
+  "keywords": [
+    "push-chat",
+    "frames",
+    "frames-validator"
+  ],
+  "author": "siddesh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/push-protocol/frames-validator/issues"
+  },
+  "homepage": "https://github.com/push-protocol/frames-validator#readme",
+  "dependencies": {
+    "@pushprotocol/restapi": "^1.7.3",
+    "ethers": "^6.11.1",
+    "openpgp": "^5.11.1",
+    "protobufjs": "^7.2.6"
+  }
+}
