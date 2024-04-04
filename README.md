@@ -10,6 +10,8 @@ npm i @pushprotocol/frames-validator
 ### Usage
 
 ```javascript
+import verifyFrameMessage from "@pushprotocol/frames-validator";
+
 const {isValid, trustedData} = await verifyFrameMessage(trustedData);   
 ```
 ### Sample Response
