@@ -1,11 +1,15 @@
-const openpgp = require("openpgp");
-const protobuf = require("protobufjs");
-const ethers = require("ethers");
-const {PushAPI, CONSTANTS} = require("@pushprotocol/restapi");
+import {ethers} from "ethers";
+import proto3 from "protobufjs";
+import * as openpgp from "openpgp";
+import {PushAPI, CONSTANTS} from "@pushprotocol/restapi";
+import {IFrameData, IChatMessage, IVerifiedResult} from "./types";
 
-async function verifyFrameMessage(trustedFrameData) {
+export default async function verifyFrameMessage(
+  trustedFrameData: IFrameData
+): Promise<IVerifiedResult> {
   const {messageBytes, pgpSignature} = trustedFrameData;
-  const protoDefinition = `
+
+  const protoDefinition: string = `
             syntax = "proto3";
             
             message ChatMessage {
@@ -23,10 +27,11 @@ async function verifyFrameMessage(trustedFrameData) {
             }
         `;
 
-  const root = protobuf.parse(protoDefinition);
+  const root = proto3.parse(protoDefinition);
   const ChatMessage = root.root.lookupType("ChatMessage");
-  const binaryData = Buffer.from(messageBytes, "hex");
-  const decodedMessage = ChatMessage.decode(binaryData);
+  const binaryData: Uint8Array = Buffer.from(messageBytes, "hex");
+  const decodedMessage: any = ChatMessage.decode(binaryData);
+
   const {
     url,
     unixTimestamp,
@@ -39,7 +44,7 @@ async function verifyFrameMessage(trustedFrameData) {
     chatId,
     clientProtocol,
     env,
-  } = decodedMessage;
+  } = decodedMessage as IChatMessage;
 
   try {
     const signer = ethers.Wallet.createRandom();
@@ -52,7 +57,9 @@ async function verifyFrameMessage(trustedFrameData) {
       overrideAccount: address,
     });
 
-    const message = await openpgp.createMessage({text: messageBytes});
+    const message = await openpgp.createMessage({
+      text: messageBytes,
+    });
     const signature = await openpgp.readSignature({
       armoredSignature: pgpSignature,
     });
@@ -62,6 +69,9 @@ async function verifyFrameMessage(trustedFrameData) {
       signature,
       verificationKeys: publicKey,
     });
+    if (!verificationResult.signatures[0]) {
+      return {isValid: false, trustedData: "Invalid Signature"};
+    }
     const {verified} = verificationResult.signatures[0];
     await verified;
 
@@ -71,9 +81,10 @@ async function verifyFrameMessage(trustedFrameData) {
         url,
         unixTimestamp: Number(unixTimestamp),
         buttonIndex,
-        inputText,
-        state,
-        transactionId,
+        inputText: inputText === "undefined" ? undefined : inputText,
+        state: state === "undefined" ? undefined : state,
+        transactionId:
+          transactionId === "undefined" ? undefined : transactionId,
         address,
         messageId,
         chatId,
@@ -85,5 +96,3 @@ async function verifyFrameMessage(trustedFrameData) {
     return {isValid: false, trustedData: "Invalid Values"};
   }
 }
-
-module.exports = verifyFrameMessage;

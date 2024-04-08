@@ -1,10 +1,15 @@
 {
   "name": "@pushprotocol/frames-validator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Validator package to validate trustedData from Push Clients.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup index.ts --format cjs,esm --dts"
   },
   "repository": {
     "type": "git",
@@ -26,5 +31,10 @@
     "ethers": "^6.11.1",
     "openpgp": "^5.11.1",
     "protobufjs": "^7.2.6"
-  }
+  },
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.4"
+  },
+  "private": false
 }
